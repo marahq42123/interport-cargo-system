@@ -1,0 +1,25 @@
+@page
+@model InterportCargo.Web.Pages.Customer.RequestQuotationModel
+@{
+    ViewData["Title"] = "Request Quotation";
+}
+
+<h2>Request Quotation</h2>
+
+@if (TempData["Msg"] is string m)
+{
+    <div style="color: green; margin: 8px 0">@m</div>
+}
+
+<form method="post">
+  <div><label>Source</label><input asp-for="Source" /></div>
+  <div><label>Destination</label><input asp-for="Destination" /></div>
+  <div><label>Number of Containers</label><input asp-for="NumberOfContainers" type="number" min="1" /></div>
+  <div><label>Package Nature</label><input asp-for="PackageNature" placeholder="e.g., pallets, cartons" /></div>
+  <div><label>Job Nature</label><input asp-for="JobNature" placeholder="Import/Export; pack/unpack; quarantine notes" /></div>
+  <button type="submit">Submit Request</button>
+</form>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<p style="margin-top:12px;"><a href="/">Back to Home</a></p>
