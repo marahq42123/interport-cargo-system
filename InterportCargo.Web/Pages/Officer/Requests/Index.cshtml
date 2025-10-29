@@ -1,0 +1,50 @@
+@page "/Officer/Requests"
+@model InterportCargo.Web.Pages.Officer.Requests.IndexModel
+@using InterportCargo.Web.Models
+
+<h2>Requests</h2>
+
+<p>
+  <a asp-page="/Officer/Requests/Index">All</a> |
+  <a asp-page="/Officer/Requests/Index" asp-route-status="@QuotationStatus.Pending">Pending</a> |
+  <a asp-page="/Officer/Requests/Index" asp-route-status="@QuotationStatus.Accepted">Accepted</a> |
+  <a asp-page="/Officer/Requests/Index" asp-route-status="@QuotationStatus.Rejected">Rejected</a>
+</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Customer</th>
+      <th>Route</th>
+      <th>Package</th>
+      <th>Job</th>
+      <th>Containers</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  @foreach (var r in Model.Items)
+  {
+    <tr>
+      <td>@r.Id</td>
+      <td>
+        @(
+          r.Customer is null
+            ? r.CustomerId.ToString()
+            : (!string.IsNullOrWhiteSpace(r.Customer.CompanyName)
+                ? r.Customer.CompanyName
+                : $"{r.Customer.FirstName} {r.Customer.FamilyName}")
+        )
+      </td>
+      <td>@r.Source → @r.Destination</td>
+      <td>@r.PackageNature</td>
+      <td>@r.JobNature</td>
+      <td>@r.NumberOfContainers</td>
+      <td>@r.Status</td>
+      <td><a asp-page="/Officer/Requests/Details" asp-route-id="@r.Id">View</a></td>
+    </tr>
+  }
+  </tbody>
+  </table>
