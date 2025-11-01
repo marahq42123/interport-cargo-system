@@ -1,0 +1,52 @@
+@page "{id:int}"
+@model InterportCargo.Web.Pages.Customer.QuotationDetailsModel
+@{
+    ViewData["Title"] = "Quotation details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.Request == null)
+{
+    <div class="alert alert-danger">Request not found.</div>
+}
+else
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <p>
+                <strong>Route:</strong> @Model.Request.Source → @Model.Request.Destination <br />
+                <strong>Containers:</strong> @Model.Request.NumberOfContainers <br />
+                <strong>Package:</strong> @Model.Request.PackageNature <br />
+                <strong>Job:</strong> @Model.Request.JobNature <br />
+                <strong>Status:</strong> @Model.Request.Status <br />
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Request.OfficerMessage))
+            {
+                <div class="alert alert-info">
+                    <strong>Message from officer:</strong> @Model.Request.OfficerMessage
+                </div>
+            }
+
+            @if (Model.Quotation != null)
+            {
+                <h4>Issued quotation</h4>
+                <p>
+                    <strong>No:</strong> @Model.Quotation.QuotationNumber <br />
+                    <strong>Date:</strong> @Model.Quotation.DateIssued.ToShortDateString() <br />
+                    <strong>Total:</strong> @Model.Quotation.Total.ToString("0.00") <br />
+                    <strong>Status:</strong> @Model.Quotation.Status
+                </p>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Your request is still being processed.
+                </div>
+            }
+
+            <a asp-page="/Customer/MyQuotations" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+}

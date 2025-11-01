@@ -1,0 +1,53 @@
+@page
+@model InterportCargo.Web.Pages.Customer.MyQuotationsModel
+@{
+    ViewData["Title"] = "My quotation requests";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-page="/Customer/RequestQuotation" class="btn btn-primary">New request</a>
+</p>
+
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-info">@TempData["Msg"]</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Route</th>
+            <th>Containers</th>
+            <th>Package</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Requests)
+{
+    <tr>
+        <td>@item.Source → @item.Destination</td>
+        <td>@item.NumberOfContainers</td>
+        <td>@item.PackageNature</td>
+        <td>@item.Status</td>
+        <td>
+            <a asp-page="/Customer/QuotationDetails" asp-route-id="@item.Id"
+               class="btn btn-sm btn-outline-secondary">View</a>
+
+            @if (item.Status == InterportCargo.Web.Models.QuotationStatus.Pending)
+            {
+                <form method="post" asp-page-handler="Cancel" asp-route-id="@item.Id" style="display:inline">
+                    <button class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Cancel this request?');">
+                        Cancel
+                    </button>
+                </form>
+            }
+        </td>
+    </tr>
+}
+    </tbody>
+</table>

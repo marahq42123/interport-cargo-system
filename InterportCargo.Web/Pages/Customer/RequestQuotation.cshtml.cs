@@ -53,7 +53,7 @@ namespace InterportCargo.Web.Pages.Customer
             _db.SaveChanges();
 
             TempData["Msg"] = $"Quotation request submitted. Request ID: {req.Id}";
-            return RedirectToPage("/Customer/RequestQuotation");
+            return RedirectToPage("/Customer/MyQuotations");
         }
     }
 }

@@ -1,0 +1,97 @@
+1. Modified `Pages/Customer/RequestQuotation.cshtml.cs`
+
+    - After saving, redirect to the list page instead of back to the form.
+    - So user can immediately see the request they just created.
+
+    Old line:
+    return RedirectToPage("/Customer/RequestQuotation");
+
+    New line:
+    return RedirectToPage("/Customer/MyQuotations");
+
+2. New pages/Additions/Modifications
+
+    2.1 Pages/Customer/MyQuotations.cshtml
+
+    Shows the logged in customer all of their quotation requests:
+        - Source, Destination
+        - Number of containers
+        - Package nature
+        - Status (Pending, Preparing, Sent, Accepted, Rejected)
+        - Buttons: View and Cancel (cancels only when pending)
+
+    Markup:
+        Link to create a new one:
+
+            <a asp-page="/Customer/RequestQuotation" class="btn btn-primary">New request</a>
+
+        - Table listing their requests.
+        - Small form to post back a cancel.
+
+    
+    2.2 Pages/Customer/MyQuotations.cshtml.cs
+
+        Loads the data for the page above:
+            1. Gets CustomerId from session (HttpContext.Session.GetInt32("CustomerId")).
+            2. If not logged in, send to /Account/Login.
+            3. Queries the DB:
+
+                _db.QuotationRequests
+                    .Where(q => q.CustomerId == customerId)
+                    .OrderByDescending(q => q.Id)
+
+            4. Exposes that list to the razor page.
+            5. Also has a POST handler (OnPostCancelAsync(int id)) so the customer can cancel their own Pending request.
+            
+        - The user can see what they’ve asked for, and what stage it’s in.
+
+ 
+    2.3 Pages/Customer/QuotationDetails.cshtml
+
+        Shows the details of one request:
+
+            - All the fields from `QuotationRequest` (Source, Destination, containers, package, job)
+            - The **status**
+            - The **officer message** (from `OfficerMessage`) if set
+            - If a real `Quotation` exists for that request, it shows the issued quote (number, date, total, status)
+            - A **Back** button to go to `MyQuotations`
+
+
+    2.4 Pages/Customer/QuotationDetails.cshtml.cs
+
+        Loads a single request for the logged-in customer:
+
+            1. Reads `CustomerId` from session
+            2. Finds the request only if it belongs to that customer:
+
+            _db.QuotationRequests.FirstOrDefaultAsync(q => q.Id == id && q.CustomerId == customerId)
+
+            3. Tries to load the **final quotation** from:
+
+            _db.Quotations.FirstOrDefaultAsync(q => q.QuotationRequestId == id);
+
+            4. Passes both to the view
+
+        - This is the page the officer/admin work will plug into; to create/send a quote, the customer will see it here
+
+
+3. MODIFIED: Pages/Shared/_Layout.cshtml:
+
+    - Inside the navbar <ul class="navbar-nav flex-grow-1"> :
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-page="/Customer/MyQuotations">My Quotations</a>
+        </li>
+
+    - So the customer can always get to their list, even if they’re not on the request form.
+
+4. Final User Side Flow (SUmmary)
+
+    1. Customer logs in, session gets CustomerId.
+    2. Customer goes to Request a Quotation (/Customer/RequestQuotation), fills form, submit.
+    3. Page creates a QuotationRequest with Status = Pending and redirects to /Customer/MyQuotations.
+    4. My Quotations shows their requests.
+    5. Can View one → /Customer/QuotationDetails/{id}
+    6. If it’s still Pending, they can Cancel it from the list.
+    7. Later, when an officer creates a real Quotation for that request, it will appear on the details page.
+
