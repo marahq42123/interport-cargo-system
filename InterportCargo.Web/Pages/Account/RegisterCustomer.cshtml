@@ -3,15 +3,69 @@
 @{
     ViewData["Title"] = "Register Customer";
 }
+
 <h2>Register Customer</h2>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
 <form method="post">
-  <div><label>First Name</label><input asp-for="FirstName" /></div>
-  <div><label>Family Name</label><input asp-for="FamilyName" /></div>
-  <div><label>Email</label><input asp-for="Email" type="email" /></div>
-  <div><label>Phone</label><input asp-for="Phone" /></div>
-  <div><label>Company Name</label><input asp-for="CompanyName" /></div>
-  <div><label>Address</label><input asp-for="Address" /></div>
-  <div><label>Password</label><input asp-for="Password" type="password" /></div>
-  <button type="submit">Register</button>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-2">
+        <label asp-for="Input.FirstName" class="form-label"></label>
+        <input asp-for="Input.FirstName" class="form-control" />
+        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Input.LastName" class="form-label"></label>
+        <input asp-for="Input.LastName" class="form-control" />
+        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Input.Email" class="form-label"></label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Input.Phone" class="form-label"></label>
+        <input asp-for="Input.Phone" class="form-control" />
+        <span asp-validation-for="Input.Phone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Input.CompanyName" class="form-label"></label>
+        <input asp-for="Input.CompanyName" class="form-control" />
+        <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Input.Address" class="form-label"></label>
+        <input asp-for="Input.Address" class="form-control" />
+        <span asp-validation-for="Input.Address" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label asp-for="Input.Password" class="form-label"></label>
+        <input asp-for="Input.Password" type="password" class="form-control" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+        <input asp-for="Input.ConfirmPassword" type="password" class="form-control" />
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+    <a asp-page="/Index" class="btn btn-secondary ms-2">Cancel</a>
 </form>
-<div asp-validation-summary="All" class="text-danger"></div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

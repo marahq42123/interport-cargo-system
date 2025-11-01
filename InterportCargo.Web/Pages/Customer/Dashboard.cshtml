@@ -1,0 +1,14 @@
+@page
+@model InterportCargo.Web.Pages.Customer.DashboardModel
+@{
+    ViewData["Title"] = "Customer Dashboard";
+}
+
+<div class="container">
+    <h2>Welcome, @Model.CustomerName</h2>
+
+    <p>
+        <a class="btn btn-primary" href="/Customer/RequestQuotation">Request a Quotation</a>
+        <a class="btn btn-outline-secondary ms-2" href="/Customer/Quotations">My Quotations</a>
+    </p>
+</div>

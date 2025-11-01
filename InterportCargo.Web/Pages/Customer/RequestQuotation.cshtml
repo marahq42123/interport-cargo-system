@@ -1,25 +1,49 @@
 @page
 @model InterportCargo.Web.Pages.Customer.RequestQuotationModel
-@{
-    ViewData["Title"] = "Request Quotation";
-}
+@using InterportCargo.Web.Models
 
 <h2>Request Quotation</h2>
 
-@if (TempData["Msg"] is string m)
+@if (TempData["Success"] != null)
 {
-    <div style="color: green; margin: 8px 0">@m</div>
+    <div class="alert alert-success">@TempData["Success"]</div>
 }
 
 <form method="post">
-  <div><label>Source</label><input asp-for="Source" /></div>
-  <div><label>Destination</label><input asp-for="Destination" /></div>
-  <div><label>Number of Containers</label><input asp-for="NumberOfContainers" type="number" min="1" /></div>
-  <div><label>Package Nature</label><input asp-for="PackageNature" placeholder="e.g., pallets, cartons" /></div>
-  <div><label>Job Nature</label><input asp-for="JobNature" placeholder="Import/Export; pack/unpack; quarantine notes" /></div>
-  <button type="submit">Submit Request</button>
+
+    <div class="form-group">
+        <label>Source</label>
+        <input asp-for="Input.Source" class="form-control" />
+        <span asp-validation-for="Input.Source" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Destination</label>
+        <input asp-for="Input.Destination" class="form-control" />
+        <span asp-validation-for="Input.Destination" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Package Nature</label>
+        <input asp-for="Input.PackageNature" class="form-control" />
+        <span asp-validation-for="Input.PackageNature" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Job Nature</label>
+        <input asp-for="Input.JobNature" class="form-control" />
+        <span asp-validation-for="Input.JobNature" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Number of Containers</label>
+        <input asp-for="Input.NumberOfContainers" class="form-control" type="number" />
+        <span asp-validation-for="Input.NumberOfContainers" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Request</button>
 </form>
 
-<div asp-validation-summary="All" class="text-danger"></div>
-
-<p style="margin-top:12px;"><a href="/">Back to Home</a></p>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

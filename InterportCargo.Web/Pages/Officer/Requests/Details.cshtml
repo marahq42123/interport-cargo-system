@@ -1,0 +1,44 @@
+@page "{id:int}"
+@model InterportCargo.Web.Pages.Officer.Requests.DetailsModel
+@using InterportCargo.Web.Models
+
+<h2>Quotation Request Details</h2>
+<hr />
+
+@if (Model.Quotation is null)
+{
+    <p class="text-danger">Quotation not found.</p>
+    return;
+}
+
+<div class="mb-3">
+    <p><strong>Customer:</strong> 
+        @(Model.Quotation.Customer != null 
+            ? Model.Quotation.Customer.FirstName + " " + Model.Quotation.Customer.LastName
+            : Model.Quotation.CustomerName)
+    </p>
+
+    <p><strong>From:</strong> @Model.Quotation.Source</p>
+    <p><strong>To:</strong> @Model.Quotation.Destination</p>
+    <p><strong>Containers:</strong> @Model.Quotation.NumberOfContainers (@Model.Quotation.ContainerType)</p>
+    <p><strong>Package Nature:</strong> @Model.Quotation.PackageNature</p>
+    <p><strong>Job Nature:</strong> @Model.Quotation.JobNature</p>
+
+    <p><strong>Status:</strong> @Model.Quotation.Status</p>
+</div>
+
+<form method="post">
+    <div class="form-group">
+        <label for="OfficerMessage"><strong>Officer Message / Notes:</strong></label>
+        <textarea asp-for="OfficerMessage" class="form-control" rows="3" placeholder="Add officer notes..."></textarea>
+    </div>
+
+    @* Only show action buttons if status is pending *@
+    @if (Model.Quotation.Status == QuotationStatus.Pending)
+    {
+        <button name="action" value="Approve" class="btn btn-success mt-2">Approve</button>
+        <button name="action" value="Reject" class="btn btn-danger mt-2">Reject</button>
+    }
+</form>
+
+<a href="/Officer/Requests/Index" class="btn btn-secondary mt-3">Back to Requests</a>
