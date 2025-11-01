@@ -1,40 +1,20 @@
 @page "{id:int}"
 @model InterportCargo.Web.Pages.Customer.QuotationDetailsModel
-@{
-    ViewData["Title"] = "Quotation Details";
-}
+@using InterportCargo.Web.Models
 
 <h2>Quotation Details</h2>
 
-@if (Model.Quotation == null)
+@if (Model.Quotation != null)
 {
-    <p class="text-danger">Quotation not found.</p>
-}
-else
-{
-    <table class="table">
-        <tr><th>Quotation ID</th><td>@Model.Quotation.Id</td></tr>
-        <tr><th>Source</th><td>@Model.Quotation.Source</td></tr>
-        <tr><th>Destination</th><td>@Model.Quotation.Destination</td></tr>
-        <tr><th>Containers</th><td>@Model.Quotation.NumberOfContainers</td></tr>
-        <tr><th>Status</th><td>@Model.Quotation.Status</td></tr>
-        <tr><th>Date Submitted</th><td>@Model.Quotation.CreatedUtc.ToLocalTime()</td></tr>
-        <tr><th>Notes</th><td>@Model.Quotation.Notes</td></tr>
-    </table>
+    <p><b>From:</b> @Model.Quotation.Source</p>
+    <p><b>To:</b> @Model.Quotation.Destination</p>
+    <p><b>Status:</b> @Model.Quotation.Status</p>
 
-    @if (Model.Quotation.Status == "Pending")
+    @if (Model.Quotation.Status == QuotationStatus.Pending)
     {
         <form method="post">
-            <input type="hidden" asp-for="Quotation.Id" />
-
-            <button type="submit" name="action" value="Accept" class="btn btn-success">Accept</button>
-            <button type="submit" name="action" value="Reject" class="btn btn-danger">Reject</button>
+            <button name="action" value="Accept" class="btn btn-success">Accept</button>
+            <button name="action" value="Reject" class="btn btn-danger">Reject</button>
         </form>
     }
-    else
-    {
-        <p><strong>You have already responded to this quotation.</strong></p>
-    }
-
-    <a class="btn btn-secondary mt-3" href="/Customer/Quotations">Back to My Quotations</a>
 }

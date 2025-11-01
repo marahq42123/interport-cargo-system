@@ -14,19 +14,19 @@
 <form method="post">
     <div class="mb-3">
         <label class="form-label">Source</label>
-        <input asp-for="Input.Source" class="form-control" />
-        <span class="text-danger" asp-validation-for="Input.Source"></span>
+        <input asp-for="Quotation.Source" class="form-control" />
+        <span class="text-danger" asp-validation-for="Quotation.Source"></span>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Destination</label>
-        <input asp-for="Input.Destination" class="form-control" />
-        <span class="text-danger" asp-validation-for="Input.Destination"></span>
+        <input asp-for="Quotation.Destination" class="form-control" />
+        <span class="text-danger" asp-validation-for="Quotation.Destination"></span>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Container Type</label>
-        <select asp-for="Input.ContainerType" class="form-select">
+        <select asp-for="Quotation.ContainerType" class="form-select">
             <option>20GP</option>
             <option>40GP</option>
             <option>LCL</option>
@@ -35,25 +35,25 @@
 
     <div class="mb-3">
         <label class="form-label">Number of Containers</label>
-        <input asp-for="Input.NumberOfContainers" class="form-control" type="number" min="1" />
-        <span class="text-danger" asp-validation-for="Input.NumberOfContainers"></span>
+        <input asp-for="Quotation.NumberOfContainers" class="form-control" type="number" min="1" />
+        <span class="text-danger" asp-validation-for="Quotation.NumberOfContainers"></span>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Package Nature</label>
-        <input asp-for="Input.PackageNature" class="form-control" placeholder="e.g., General / Fragile / Food etc." />
-        <span class="text-danger" asp-validation-for="Input.PackageNature"></span>
+        <input asp-for="Quotation.PackageNature" class="form-control" placeholder="e.g., General / Fragile / Food etc." />
+        <span class="text-danger" asp-validation-for="Quotation.PackageNature"></span>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Job Nature</label>
-        <input asp-for="Input.JobNature" class="form-control" placeholder="Import / Export / Packing / Unpacking / Quarantine" />
-        <span class="text-danger" asp-validation-for="Input.JobNature"></span>
+        <input asp-for="Quotation.JobNature" class="form-control" placeholder="Import / Export / Packing / Unpacking / Quarantine" />
+        <span class="text-danger" asp-validation-for="Quotation.JobNature"></span>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Notes (optional)</label>
-        <textarea asp-for="Input.Notes" class="form-control"></textarea>
+        <textarea asp-for="Quotation.Notes" class="form-control"></textarea>
     </div>
 
     <button class="btn btn-primary" type="submit">Submit</button>

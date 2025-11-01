@@ -9,53 +9,58 @@ namespace InterportCargo.Web.Pages.Officer.Requests
 {
     public class DetailsModel : PageModel
     {
-        private readonly InterportContext _db;
-        public DetailsModel(InterportContext db) { _db = db; }
+        private readonly InterportContext _context;
 
-        public QuotationRequest Item { get; set; } = default!;
+        public DetailsModel(InterportContext context)
+        {
+            _context = context;
+        }
 
-        [BindProperty] public int Id { get; set; }
-        [BindProperty] public string? OfficerMessage { get; set; } = string.Empty;
+        // Holds the current quotation being displayed
+        [BindProperty]
+        public QuotationRequest Quotation { get; set; } = default!;
 
+        // Officer can leave notes or responses
+        [BindProperty]
+        public string? OfficerMessage { get; set; }
+
+        // Load quotation details with linked customer info
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var req = await _db.QuotationRequests
-                               .Include(r => r.Customer)
-                               .FirstOrDefaultAsync(r => r.Id == id);
-            if (req == null) return NotFound();
+            Quotation = await _context.QuotationRequests
+                .Include(q => q.Customer)
+                .FirstOrDefaultAsync(q => q.Id == id);
 
-            Item = req;
-            Id = id;
-            OfficerMessage = req.OfficerMessage;
+            if (Quotation == null)
+                return NotFound();
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostApproveAsync()
+        // Officer submits approval or rejection
+        public async Task<IActionResult> OnPostAsync(int id, string action)
         {
-            var req = await _db.QuotationRequests.FirstOrDefaultAsync(r => r.Id == Id);
-            if (req == null) return NotFound();
+            var request = await _context.QuotationRequests
+                .Include(q => q.Customer)
+                .FirstOrDefaultAsync(q => q.Id == id);
 
-            if (req.Status == QuotationStatus.Pending)
-            {
-                req.Status = QuotationStatus.Accepted;
-                req.OfficerMessage = OfficerMessage;
-                await _db.SaveChangesAsync();
-            }
-            return RedirectToPage("/Officer/Requests/Details", new { id = Id });
-        }
+            if (request == null)
+                return NotFound();
 
-        public async Task<IActionResult> OnPostRejectAsync()
-        {
-            var req = await _db.QuotationRequests.FirstOrDefaultAsync(r => r.Id == Id);
-            if (req == null) return NotFound();
+            // Use ENUM instead of string
+            if (action == "Approve")
+                request.Status = QuotationStatus.Accepted;
+            else if (action == "Reject")
+                request.Status = QuotationStatus.Rejected;
+            else
+                request.Status = QuotationStatus.Pending; // fallback safety
 
-            if (req.Status == QuotationStatus.Pending)
-            {
-                req.Status = QuotationStatus.Rejected;
-                req.OfficerMessage = OfficerMessage;
-                await _db.SaveChangesAsync();
-            }
-            return RedirectToPage("/Officer/Requests/Details", new { id = Id });
+            // Save officer response
+            request.OfficerMessage = OfficerMessage;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("/Officer/Requests/Index");
         }
     }
 }
