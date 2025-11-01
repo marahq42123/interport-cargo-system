@@ -1,0 +1,62 @@
+@page "/Officer/Requests/{id:int}"
+@model InterportCargo.Web.Pages.Officer.Requests.DetailsModel
+@using InterportCargo.Web.Models
+
+<h2>Request #@Model.Item.Id</h2>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Customer</dt>
+      <dd class="col-sm-9">@(
+          $"{Model.Item.Customer?.FirstName} {Model.Item.Customer?.FamilyName}".Trim() == string.Empty
+          ? $"Customer #{Model.Item.CustomerId}"
+          : $"{Model.Item.Customer?.FirstName} {Model.Item.Customer?.FamilyName}")
+
+        )</dd>
+
+      <dt class="col-sm-3">Route</dt>
+      <dd class="col-sm-9">@Model.Item.Source → @Model.Item.Destination</dd>
+
+      <dt class="col-sm-3">Containers</dt>
+      <dd class="col-sm-9">@Model.Item.NumberOfContainers</dd>
+
+      <dt class="col-sm-3">Package Nature</dt>
+      <dd class="col-sm-9">@Model.Item.PackageNature</dd>
+
+      <dt class="col-sm-3">Job Nature</dt>
+      <dd class="col-sm-9">@Model.Item.JobNature</dd>
+
+      <dt class="col-sm-3">Status</dt>
+      <dd class="col-sm-9">@Model.Item.Status</dd>
+
+      <dt class="col-sm-3">Officer Message</dt>
+      <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.Item.OfficerMessage) ? Model.Item.OfficerMessage : "(none)")</dd>
+    </dl>
+  </div>
+</div>
+
+@if (Model.Item.Status == QuotationStatus.Pending)
+{
+  <form method="post" asp-page-handler="Approve" class="mb-2">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-2">
+      <label asp-for="OfficerMessage">Message to customer (optional)</label>
+      <textarea asp-for="OfficerMessage" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Accept</button>
+  </form>
+
+  <form method="post" asp-page-handler="Reject">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-2">
+      <label asp-for="OfficerMessage">Reason (optional)</label>
+      <textarea asp-for="OfficerMessage" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-danger">Reject</button>
+  </form>
+}
+else
+{
+  <div class="alert alert-info">This request is @Model.Item.Status.</div>
+}
