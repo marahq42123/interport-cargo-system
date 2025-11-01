@@ -1,65 +1,49 @@
 @page
 @model InterportCargo.Web.Pages.Customer.RequestQuotationModel
-@{
-    ViewData["Title"] = "Request Quotation";
-}
+@using InterportCargo.Web.Models
 
 <h2>Request Quotation</h2>
 
-@if (!string.IsNullOrWhiteSpace(Model.Message))
+@if (TempData["Success"] != null)
 {
-    <div class="alert alert-success">@Model.Message</div>
+    <div class="alert alert-success">@TempData["Success"]</div>
 }
 
 <form method="post">
-    <div class="mb-3">
-        <label class="form-label">Source</label>
-        <input asp-for="Quotation.Source" class="form-control" />
-        <span class="text-danger" asp-validation-for="Quotation.Source"></span>
+
+    <div class="form-group">
+        <label>Source</label>
+        <input asp-for="Input.Source" class="form-control" />
+        <span asp-validation-for="Input.Source" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Destination</label>
-        <input asp-for="Quotation.Destination" class="form-control" />
-        <span class="text-danger" asp-validation-for="Quotation.Destination"></span>
+    <div class="form-group">
+        <label>Destination</label>
+        <input asp-for="Input.Destination" class="form-control" />
+        <span asp-validation-for="Input.Destination" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Container Type</label>
-        <select asp-for="Quotation.ContainerType" class="form-select">
-            <option>20GP</option>
-            <option>40GP</option>
-            <option>LCL</option>
-        </select>
+    <div class="form-group">
+        <label>Package Nature</label>
+        <input asp-for="Input.PackageNature" class="form-control" />
+        <span asp-validation-for="Input.PackageNature" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Number of Containers</label>
-        <input asp-for="Quotation.NumberOfContainers" class="form-control" type="number" min="1" />
-        <span class="text-danger" asp-validation-for="Quotation.NumberOfContainers"></span>
+    <div class="form-group">
+        <label>Job Nature</label>
+        <input asp-for="Input.JobNature" class="form-control" />
+        <span asp-validation-for="Input.JobNature" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Package Nature</label>
-        <input asp-for="Quotation.PackageNature" class="form-control" placeholder="e.g., General / Fragile / Food etc." />
-        <span class="text-danger" asp-validation-for="Quotation.PackageNature"></span>
+    <div class="form-group">
+        <label>Number of Containers</label>
+        <input asp-for="Input.NumberOfContainers" class="form-control" type="number" />
+        <span asp-validation-for="Input.NumberOfContainers" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Job Nature</label>
-        <input asp-for="Quotation.JobNature" class="form-control" placeholder="Import / Export / Packing / Unpacking / Quarantine" />
-        <span class="text-danger" asp-validation-for="Quotation.JobNature"></span>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Notes (optional)</label>
-        <textarea asp-for="Quotation.Notes" class="form-control"></textarea>
-    </div>
-
-    <button class="btn btn-primary" type="submit">Submit</button>
-    <a class="btn btn-outline-secondary ms-2" href="/Customer/Dashboard">Cancel</a>
+    <button type="submit" class="btn btn-primary">Submit Request</button>
 </form>
 
-@section Scripts{
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

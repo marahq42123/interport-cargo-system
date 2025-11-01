@@ -5,19 +5,24 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace InterportCargo.Web.Models
 {
     /// <summary>
-    /// Represents a quotation request submitted by a customer.
+    /// Represents a quotation request submitted by a customer OR a guest.
     /// </summary>
     public class QuotationRequest
     {
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public int CustomerId { get; set; }
+        /// <summary>
+        /// Nullable – because a request can be made by a guest (no login).
+        /// </summary>
+        public int? CustomerId { get; set; }
 
         [ForeignKey(nameof(CustomerId))]
         public Customer? Customer { get; set; }
 
+        /// <summary>
+        /// Saves customer name directly for display even if account gets deleted.
+        /// </summary>
         public string? CustomerName { get; set; }
 
         [Required, StringLength(120)]
@@ -41,15 +46,9 @@ namespace InterportCargo.Web.Models
         [StringLength(500)]
         public string? Notes { get; set; }
 
-        /// <summary>
-        /// NEW — Use enum instead of string.
-        /// </summary>
         [Required]
         public QuotationStatus Status { get; set; } = QuotationStatus.Pending;
 
-        /// <summary>
-        /// Officer response or clarification.
-        /// </summary>
         [StringLength(1000)]
         public string? OfficerMessage { get; set; }
 

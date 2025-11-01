@@ -1,0 +1,16 @@
+@page
+@model InterportCargo.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container mt-5 text-center">
+    <h1 class="mb-4">🚢 Interport Cargo System</h1>
+    <p class="lead">Choose an option below to continue:</p>
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a class="btn btn-primary btn-lg" href="/Customer/Dashboard">Customer Dashboard</a>
+        <a class="btn btn-success btn-lg" href="/Customer/RequestQuotation">Request a Quotation</a>
+        <a class="btn btn-warning btn-lg" href="/Officer/Requests">Officer Dashboard</a>
+    </div>
+</div>
