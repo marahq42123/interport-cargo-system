@@ -3,6 +3,7 @@ using System;
 using InterportCargo.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InterportCargo.Web.Migrations
 {
     [DbContext(typeof(InterportContext))]
-    partial class InterportContextModelSnapshot : ModelSnapshot
+    [Migration("20251101035353_Add_Customers")]
+    partial class Add_Customers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -155,55 +158,37 @@ namespace InterportCargo.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ContainerType")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("CustomerId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Destination")
                         .IsRequired()
-                        .HasMaxLength(120)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("JobNature")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("NumberOfContainers")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("OfficerMessage")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PackageNature")
                         .IsRequired()
-                        .HasMaxLength(160)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Source")
                         .IsRequired()
-                        .HasMaxLength(120)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId", "Status");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("QuotationRequests");
                 });
@@ -267,6 +252,17 @@ namespace InterportCargo.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("InterportCargo.Web.Models.QuotationRequest", b =>
+                {
+                    b.HasOne("InterportCargo.Web.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }

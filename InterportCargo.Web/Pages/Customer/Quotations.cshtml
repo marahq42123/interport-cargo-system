@@ -1,0 +1,39 @@
+@page
+@model InterportCargo.Web.Pages.Customer.QuotationsModel
+@{
+    ViewData["Title"] = "My Quotations";
+}
+
+<h2>My Quotations</h2>
+
+@if (Model.Items == null || !Model.Items.Any())
+{
+    <p>You have not submitted any quotation requests yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Quotation ID</th>
+                <th>Source → Destination</th>
+                <th>Containers</th>
+                <th>Status</th>
+                <th>Date Submitted</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var q in Model.Items)
+        {
+            <tr>
+                <td><a href="/Customer/QuotationDetails/@q.Id">@q.Id</a></td>
+                <td>@q.Source → @q.Destination</td>
+                <td>@q.NumberOfContainers</td>
+                <td>@q.Status</td>
+                <td>@q.CreatedUtc.ToLocalTime()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+<a class="btn btn-secondary" href="/Customer/Dashboard">Back to Dashboard</a>

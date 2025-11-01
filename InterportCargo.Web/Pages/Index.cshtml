@@ -1,15 +1,29 @@
 @page
 @model IndexModel
+@using InterportCargo.Web.Helpers
 @{
     ViewData["Title"] = "Home page";
+    var isCustomer = Auth.IsCustomer(HttpContext);  
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 
-    <p><a href="/Account/RegisterCustomer">Register Customer</a></p>
-    <p><a href="/Account/Login">Login</a></p>
-    <p><a href="/Customer/RequestQuotation">Request Quotation</a></p>
+    @if (TempData["Success"] is string s) { <div class="alert alert-success">@s</div> }
+    @if (TempData["Error"]   is string e) { <div class="alert alert-danger">@e</div> }
+
+    @if (isCustomer)
+    {
+        <p><a href="/Customer/Dashboard">Customer Dashboard</a></p>
+        <p><a href="/Customer/RequestQuotation">Request Quotation</a></p>
+        <p><a href="/Customer/Quotations">My Quotations</a></p>
+        <p><a href="/Account/Logout">Logout</a></p>
+    }
+    else
+    {
+        <p><a href="/Account/RegisterCustomer">Register Customer</a></p>
+        <p><a href="/Account/Login">Login</a></p>
+    }
 
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>

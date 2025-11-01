@@ -6,20 +6,60 @@
 
 <h2>Request Quotation</h2>
 
-@if (TempData["Msg"] is string m)
+@if (!string.IsNullOrWhiteSpace(Model.Message))
 {
-    <div style="color: green; margin: 8px 0">@m</div>
+    <div class="alert alert-success">@Model.Message</div>
 }
 
 <form method="post">
-  <div><label>Source</label><input asp-for="Source" /></div>
-  <div><label>Destination</label><input asp-for="Destination" /></div>
-  <div><label>Number of Containers</label><input asp-for="NumberOfContainers" type="number" min="1" /></div>
-  <div><label>Package Nature</label><input asp-for="PackageNature" placeholder="e.g., pallets, cartons" /></div>
-  <div><label>Job Nature</label><input asp-for="JobNature" placeholder="Import/Export; pack/unpack; quarantine notes" /></div>
-  <button type="submit">Submit Request</button>
+    <div class="mb-3">
+        <label class="form-label">Source</label>
+        <input asp-for="Input.Source" class="form-control" />
+        <span class="text-danger" asp-validation-for="Input.Source"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Destination</label>
+        <input asp-for="Input.Destination" class="form-control" />
+        <span class="text-danger" asp-validation-for="Input.Destination"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Container Type</label>
+        <select asp-for="Input.ContainerType" class="form-select">
+            <option>20GP</option>
+            <option>40GP</option>
+            <option>LCL</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Number of Containers</label>
+        <input asp-for="Input.NumberOfContainers" class="form-control" type="number" min="1" />
+        <span class="text-danger" asp-validation-for="Input.NumberOfContainers"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Package Nature</label>
+        <input asp-for="Input.PackageNature" class="form-control" placeholder="e.g., General / Fragile / Food etc." />
+        <span class="text-danger" asp-validation-for="Input.PackageNature"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Job Nature</label>
+        <input asp-for="Input.JobNature" class="form-control" placeholder="Import / Export / Packing / Unpacking / Quarantine" />
+        <span class="text-danger" asp-validation-for="Input.JobNature"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Notes (optional)</label>
+        <textarea asp-for="Input.Notes" class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+    <a class="btn btn-outline-secondary ms-2" href="/Customer/Dashboard">Cancel</a>
 </form>
 
-<div asp-validation-summary="All" class="text-danger"></div>
-
-<p style="margin-top:12px;"><a href="/">Back to Home</a></p>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

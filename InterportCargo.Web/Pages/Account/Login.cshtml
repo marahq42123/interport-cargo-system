@@ -3,10 +3,33 @@
 @{
     ViewData["Title"] = "Login";
 }
-<h2>Login</h2>
+
+<h1>Login</h1>
+
+@if (TempData["Error"] is string e)
+{
+    <div class="alert alert-danger">@e</div>
+}
+
 <form method="post">
-  <div><label>Email</label><input asp-for="Email" type="email" /></div>
-  <div><label>Password</label><input asp-for="Password" type="password" /></div>
-  <button type="submit">Login</button>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Email" class="form-label"></label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Password" class="form-label"></label>
+        <input asp-for="Input.Password" type="password" class="form-control" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+    <a asp-page="/Index" class="btn btn-secondary ms-2">Cancel</a>
 </form>
-<div asp-validation-summary="All" class="text-danger"></div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

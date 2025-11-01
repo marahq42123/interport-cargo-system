@@ -3,6 +3,7 @@ using System;
 using InterportCargo.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InterportCargo.Web.Migrations
 {
     [DbContext(typeof(InterportContext))]
-    partial class InterportContextModelSnapshot : ModelSnapshot
+    [Migration("20251101045741_AddQuotationRequest")]
+    partial class AddQuotationRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
