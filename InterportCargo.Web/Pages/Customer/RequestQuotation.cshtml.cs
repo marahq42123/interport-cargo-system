@@ -50,8 +50,8 @@ namespace InterportCargo.Web.Pages.Customer
             // create entity from input
             var quotation = new QuotationRequest
             {
-                CustomerId = customerId.Value,              // <-- make it non-null
-                CustomerName = null,                        // you already have CustomerId
+                CustomerId = customerId.Value,              
+                CustomerName = null,                       
                 Source = Input.Source,
                 Destination = Input.Destination,
                 ContainerType = Input.ContainerType,
