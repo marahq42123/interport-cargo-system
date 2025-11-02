@@ -8,19 +8,32 @@ using System.Collections.Generic;
 
 namespace InterportCargo.Web.Pages.Customer
 {
-    // page model for listing all quotation requests submitted by the logged-in customer
+    /// <summary>
+    /// PageModel for listing all quotation requests submitted by the logged in customer
+    /// </summary>
     public class QuotationsModel : PageModel
     {
         private readonly InterportContext _db;
 
+        /// <summary>
+        /// Injects the database context
+        /// </summary>
+        /// <param name="db">The application's database context.</param>
         public QuotationsModel(InterportContext db)
         {
             _db = db;
         }
 
-        // list of quotation requests belonging to the current customer
+        /// <summary>
+        /// A list of quotation requests belonging to the current customer.
+        /// </summary>
         public List<QuotationRequest> Items { get; set; } = new();
 
+        /// <summary>
+        /// handles GET requests to load the customer's quotation history.
+        /// Redirects to login if no active customer session is found.
+        /// </summary>
+        /// <returns>The page displaying the quotations or a redirect to login.</returns>
         public IActionResult OnGet()
         {
             if (!Auth.IsCustomer(HttpContext))
