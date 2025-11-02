@@ -1,124 +1,125 @@
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using InterportCargo.Web.Data;
+using InterportCargo.Web.Models;
 using InterportCargo.Web.Pages.Customer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using CustomerModel = InterportCargo.Web.Models.Customer; // Prevent namespace conflict
 using Xunit;
 
 namespace InterportCargo.Tests.Pages.Customer
 {
-    /// <summary>
-    /// Unit tests for User Story I2 – submitting a quotation request.
-    /// Validates authentication, valid/invalid form submission, and database persistence.
-    /// </summary>
     public class RequestQuotationTests
     {
-        /// <summary>
-        /// Creates a fresh in-memory database per test.
-        /// </summary>
-        private InterportContext GetDbContext()
+        // in-memory EF Core context
+        private InterportContext GetDb()
         {
             var options = new DbContextOptionsBuilder<InterportContext>()
-                .UseInMemoryDatabase("TestDB_" + System.Guid.NewGuid())
+                .UseInMemoryDatabase("interport-tests")
                 .Options;
             return new InterportContext(options);
         }
 
-        /// <summary>
-        /// Creates the Razor PageModel with fake session + HttpContext.
-        /// If isLoggedIn = true → adds fake CustomerId + "Customer" role.
-        /// </summary>
-        private RequestQuotationModel CreatePageModel(InterportContext db, bool isLoggedIn = true)
+        // attach TempData to the page (needed because the page does TempData["Success"] = ...)
+        private static void AttachTempData(RequestQuotationModel page, DefaultHttpContext http)
         {
-            var httpContext = new DefaultHttpContext
+            var provider = new SessionStateTempDataProvider(new TempDataSerializer());
+            page.TempData = new TempDataDictionary(http, provider);
+        }
+
+        [Fact]
+        public async Task Post_redirects_to_login_when_not_logged_in()
+        {
+            // arrange
+            var db = GetDb();
+            var page = new RequestQuotationModel(db)
             {
-                Session = new DummySession()
+                Input = new RequestQuotationModel.InputModel
+                {
+                    Source = "A",
+                    Destination = "B",
+                    PackageNature = "General",
+                    JobNature = "Import",
+                    NumberOfContainers = 1
+                }
             };
 
-            if (isLoggedIn)
-            {
-                httpContext.Session.SetInt32("CustomerId", 1);
-                httpContext.Session.SetString("UserRole", "Customer");
-            }
+            // we still need a session object, just no CustomerId set
+            var session = new TestSession();
+            var http = new DefaultHttpContext { Session = session };
+            page.PageContext = new PageContext { HttpContext = http };
+            AttachTempData(page, http);
 
-            return new RequestQuotationModel(db)
+            // act
+            var result = await page.OnPostAsync();
+
+            // assert
+            var redirect = Assert.IsType<RedirectToPageResult>(result);
+            Assert.Equal("/Account/Login", redirect.PageName);
+        }
+
+        [Fact]
+        public async Task Post_saves_and_redirects_when_logged_in()
+        {
+            // arrange
+            var db = GetDb();
+            var page = new RequestQuotationModel(db)
             {
-                PageContext = new PageContext { HttpContext = httpContext }
+                Input = new RequestQuotationModel.InputModel
+                {
+                    Source = "Brisbane",
+                    Destination = "Singapore",
+                    PackageNature = "General",
+                    JobNature = "Export",
+                    NumberOfContainers = 2
+                }
             };
+
+            // fake logged-in customer
+            var session = new TestSession();
+            session.SetInt32("CustomerId", 5);
+
+            var http = new DefaultHttpContext { Session = session };
+            page.PageContext = new PageContext { HttpContext = http };
+            AttachTempData(page, http);
+
+            // act
+            var result = await page.OnPostAsync();
+
+            // assert: correct redirect
+            var redirect = Assert.IsType<RedirectToPageResult>(result);
+            Assert.Equal("/Customer/Quotations", redirect.PageName);
+
+            // assert: it actually saved
+            var saved = await db.QuotationRequests.FirstOrDefaultAsync(q => q.CustomerId == 5);
+            Assert.NotNull(saved);
+            Assert.Equal("Brisbane", saved!.Source);
+            Assert.Equal("Singapore", saved.Destination);
+            Assert.Equal(QuotationStatus.Pending, saved.Status);
         }
 
-        // Test 1 — Users not logged in should be redirected to login page.
         [Fact]
-        public void OnPost_NotLoggedIn_RedirectsToLogin()
+        public async Task Post_returns_page_when_model_invalid()
         {
-            var db = GetDbContext();
-            var page = CreatePageModel(db, false);
+            var db = GetDb();
+            var page = new RequestQuotationModel(db);
 
-            var result = page.OnPost() as RedirectToPageResult;
+            var session = new TestSession();
+            session.SetInt32("CustomerId", 1);
 
-            Assert.NotNull(result);
-            Assert.Equal("/Account/Login", result!.PageName);
-        }
+            var http = new DefaultHttpContext { Session = session };
+            page.PageContext = new PageContext { HttpContext = http };
+            AttachTempData(page, http);
 
-        // Test 2 — Valid data saves to DB and stays on Page() (not redirect).
-        [Fact]
-        public async Task OnPost_ValidData_SavesQuotationRequest()
-        {
-            var db = GetDbContext();
-            db.Customers.Add(new CustomerModel { Id = 1, FirstName = "Test", LastName = "User", Email = "t@t.com", PasswordHash = "x" });
-            await db.SaveChangesAsync();
-
-            var page = CreatePageModel(db);
-            page.Input.Source = "Sydney";
-            page.Input.Destination = "Melbourne";
-            page.Input.NumberOfContainers = 2;
-            page.Input.ContainerType = "20GP";
-            page.Input.PackageNature = "General";
-            page.Input.JobNature = "Import";
-
-            var result = page.OnPost();
-
-            Assert.IsType<PageResult>(result);
-            Assert.Single(db.QuotationRequests);
-        }
-
-        // Test 3 — Invalid model should NOT save anything.
-        [Fact]
-        public void OnPost_InvalidModel_ReturnsPageAndDoesNotSave()
-        {
-            var db = GetDbContext();
-            var page = CreatePageModel(db);
-
-            page.Input.Source = ""; // triggers validation error
+            // force invalid
             page.ModelState.AddModelError("Input.Source", "Required");
 
-            var result = page.OnPost();
+            var result = await page.OnPostAsync();
 
             Assert.IsType<PageResult>(result);
-            Assert.Empty(db.QuotationRequests);
         }
-    }
-
-    /// <summary>
-    /// Fake in-memory session used for testing without ASP.NET Core runtime.
-    /// </summary>
-    public class DummySession : ISession
-    {
-        private readonly Dictionary<string, byte[]> storage = new();
-        public bool IsAvailable => true;
-        public string Id => "test-session";
-        public IEnumerable<string> Keys => storage.Keys;
-
-        public void Set(string key, byte[] value) => storage[key] = value;
-        public bool TryGetValue(string key, out byte[] value) => storage.TryGetValue(key, out value);
-        public void Remove(string key) => storage.Remove(key);
-        public void Clear() => storage.Clear();
-        public Task CommitAsync(CancellationToken token = default) => Task.CompletedTask;
-        public Task LoadAsync(CancellationToken token = default) => Task.CompletedTask;
     }
 }
