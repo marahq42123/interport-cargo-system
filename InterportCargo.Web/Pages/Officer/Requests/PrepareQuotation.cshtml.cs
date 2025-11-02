@@ -87,7 +87,7 @@ namespace InterportCargo.Web.Pages.Officer
             // show confirmation directly
             ViewData["Message"] = $"Quotation submitted successfully. Total: ${TotalAmount:F2}";
             Request = req;
-            return RedirectToPage("/Officer/Requests", new { id = req.Id });
+            return RedirectToPage("/Officer/Requests/Index", new { id = req.Id });
         }
 
 
