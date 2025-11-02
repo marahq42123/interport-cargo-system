@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace InterportCargo.Web.Pages.Customer
 {
     /// <summary>
-    /// Handles the creation and submission of a new quotation request by a customer or guest user.
+    /// Handles the creation and submission of a new quotation request by a customer.
     /// </summary>
     public class RequestQuotationModel : PageModel
     {
@@ -34,55 +34,32 @@ namespace InterportCargo.Web.Pages.Customer
             public string? Notes { get; set; }
         }
 
-        public void OnGet() { }
-
-        // Keep a sync entry point for tests
-        public IActionResult OnPost()
+        public void OnGet()
         {
-            var t = OnPostAsync();
-            t.GetAwaiter().GetResult();
-            return t.Result;
+            // if you want to prefill here, do it
         }
 
+        // 👇 keep ONLY this POST
         public async Task<IActionResult> OnPostAsync()
         {
-            // 1) Auth check – tests expect redirect to /Account/Login when not logged in
-            bool loggedIn = false;
-            int? customerId = null;
-            try
-            {
-                if (HttpContext?.Session != null)
-                {
-                    var val = HttpContext.Session.GetInt32("CustomerId");
-                    if (val.HasValue)
-                    {
-                        loggedIn = true;
-                        customerId = val.Value;
-                    }
-                }
-            }
-            catch
-            {
-                // If session middleware is absent in tests, treat as not logged in
-                loggedIn = false;
-            }
-
-            if (!loggedIn)
+            // 1) must be logged in
+            var customerId = HttpContext.Session.GetInt32("CustomerId");
+            if (customerId is null)
             {
                 return RedirectToPage("/Account/Login");
             }
 
-            // 2) Model validation
+            // 2) validate form
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            // 3) Save request (null-safe)
+            // 3) create entity from input
             var quotation = new QuotationRequest
             {
-                CustomerId = customerId,
-                CustomerName = customerId.HasValue ? null : "Guest User",
+                CustomerId = customerId.Value,              // <-- make it non-null
+                CustomerName = null,                        // you already have CustomerId
                 Source = Input.Source,
                 Destination = Input.Destination,
                 ContainerType = Input.ContainerType,
@@ -97,16 +74,11 @@ namespace InterportCargo.Web.Pages.Customer
             _context.QuotationRequests.Add(quotation);
             await _context.SaveChangesAsync();
 
-            // 4) Tests expect PageResult on success (not a redirect)
-            // Guard TempData to avoid NRE in test envs
-            if (TempData != null)
-            {
-                TempData["Success"] = "✅ Quotation request submitted successfully.";
-            }
+            // 4) optional success message
+            TempData["Success"] = "Quotation request submitted successfully.";
 
-            // Optionally refresh the form with a cleared model so Page() renders clean
-            Input = new InputModel();
-            return Page();
+            // 5) go to list page
+            return RedirectToPage("/Customer/MyQuotations");
         }
     }
 }
