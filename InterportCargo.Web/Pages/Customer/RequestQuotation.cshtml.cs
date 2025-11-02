@@ -9,9 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace InterportCargo.Web.Pages.Customer
 {
-    /// <summary>
-    /// Handles the creation and submission of a new quotation request by a customer.
-    /// </summary>
+    // handles the creation and submission of a new quotation request by a customer
     public class RequestQuotationModel : PageModel
     {
         private readonly InterportContext _context;
@@ -34,28 +32,22 @@ namespace InterportCargo.Web.Pages.Customer
             public string? Notes { get; set; }
         }
 
-        public void OnGet()
-        {
-            // if you want to prefill here, do it
-        }
-
-        // 👇 keep ONLY this POST
         public async Task<IActionResult> OnPostAsync()
         {
-            // 1) must be logged in
+            // must be logged in
             var customerId = HttpContext.Session.GetInt32("CustomerId");
             if (customerId is null)
             {
                 return RedirectToPage("/Account/Login");
             }
 
-            // 2) validate form
+            // validate form
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            // 3) create entity from input
+            // create entity from input
             var quotation = new QuotationRequest
             {
                 CustomerId = customerId.Value,              // <-- make it non-null
@@ -74,11 +66,10 @@ namespace InterportCargo.Web.Pages.Customer
             _context.QuotationRequests.Add(quotation);
             await _context.SaveChangesAsync();
 
-            // 4) optional success message
             TempData["Success"] = "Quotation request submitted successfully.";
 
-            // 5) go to list page
-            return RedirectToPage("/Customer/MyQuotations");
+            // go to list page
+            return RedirectToPage("/Customer/Quotations");
         }
     }
 }
