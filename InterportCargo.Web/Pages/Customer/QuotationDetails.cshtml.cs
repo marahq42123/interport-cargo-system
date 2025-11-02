@@ -9,27 +9,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InterportCargo.Web.Pages.Customer
 {
-    /// <summary>
-    /// Displays details of a customer's quotation request and allows accept/reject actions.
-    /// </summary>
+    // displays details of a customer's quotation request and allows accept/reject actions.
     public class QuotationDetailsModel : PageModel
     {
         private readonly InterportContext _context;
 
-        /// <summary>
-        /// Initializes the page model with database context.
-        /// </summary>
+        //nstarts the page model with database context
         public QuotationDetailsModel(InterportContext context) => _context = context;
-
-        /// <summary>
-        /// Holds the quotation details for the current customer.
-        /// </summary>
+        
+		// holds the quotation details for the current customer.
         [BindProperty]
         public QuotationRequest Quotation { get; set; }
 
-        /// <summary>
-        /// Loads the quotation details based on ID only if the user is logged in.
-        /// </summary>
+        // Loads the quotation details based on ID only if the user is logged in.
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var customerId = HttpContext.Session.GetInt32("CustomerId");
@@ -42,9 +34,7 @@ namespace InterportCargo.Web.Pages.Customer
             return Page();
         }
 
-        /// <summary>
-        /// Processes quotation approval or rejection from customer side.
-        /// </summary>
+        //  process quotation approval or rejection from customer side
         public async Task<IActionResult> OnPostAsync(int id, string action)
         {
             var customerId = HttpContext.Session.GetInt32("CustomerId");
