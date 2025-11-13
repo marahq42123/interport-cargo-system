@@ -1,0 +1,51 @@
+@page "/Officer/Requests/PrepareQuotation/{requestId:int}"
+@model InterportCargo.Web.Pages.Officer.PrepareQuotationModel
+@using InterportCargo.Web.Models
+
+<h2>Prepare Quotation for Request #@Model.Request.Id</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="RequestId" />
+
+    <div class="mb-3">
+        <label class="form-label">Container Type</label>
+        <select asp-for="ContainerType" class="form-select">
+            <option>20 Feet Container</option>
+            <option>40 Feet Container</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Scope (Job Description)</label>
+        <input asp-for="Scope" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Number of Containers</label>
+        <input asp-for="NumberOfContainers" class="form-control" />
+    </div>
+
+    <div class="form-check mb-2">
+        <input asp-for="RequiresQuarantine" class="form-check-input" type="checkbox" id="qCheck" />
+        <label for="qCheck" class="form-check-label">Requires Quarantine</label>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="RequiresFumigation" class="form-check-input" type="checkbox" id="fCheck" />
+        <label for="fCheck" class="form-check-label">Requires Fumigation</label>
+    </div>
+
+    <hr />
+
+    <button type="submit" name="action" value="calculate" class="btn btn-secondary">Calculate Total</button>
+    <button type="submit" name="action" value="submit" class="btn btn-primary">Submit Quotation</button>
+
+    <hr />
+
+    <h4>Quotation Summary</h4>
+    <p><strong>Base Charge:</strong> $@Model.ChargesBase</p>
+    <p><strong>Depot Charge:</strong> $@Model.ChargesDepot</p>
+    <p><strong>LCL Delivery Charge:</strong> $@Model.ChargesLcl</p>
+    <p><strong>Discount:</strong> @Model.DiscountPercent%</p>
+    <p><strong>Total (with 10% GST):</strong> <b>$@Model.TotalAmount</b></p>
+</form>

@@ -9,5 +9,7 @@ namespace InterportCargo.Web.Data
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<QuotationRequest> QuotationRequests { get; set; }
+        public DbSet<Quotation> Quotations { get; set; } = default!;
+
     }
 }

@@ -34,14 +34,26 @@ namespace InterportCargo.Web.Pages.Officer.Requests
             if (request == null) return NotFound();
 
             if (action == "Approve")
-                request.Status = QuotationStatus.Accepted;
-            else if (action == "Reject")
-                request.Status = QuotationStatus.Rejected;
+            {
+                // Save any officer notes before redirecting
+                request.OfficerMessage = OfficerMessage;
+                await _context.SaveChangesAsync();
 
-            request.OfficerMessage = OfficerMessage;
-            await _context.SaveChangesAsync();
+                // Redirect to the Prepare Quotation page
+                return RedirectToPage("/Officer/Requests/PrepareQuotation", new { requestId = id });
+
+            }
+            else if (action == "Reject")
+            {
+                request.Status = QuotationStatus.Rejected;
+                request.OfficerMessage = OfficerMessage;
+                await _context.SaveChangesAsync();
+
+                return RedirectToPage("/Officer/Requests/Index");
+            }
 
             return RedirectToPage("/Officer/Requests/Index");
         }
+
     }
 }
